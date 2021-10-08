@@ -1,22 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/home.dart';
+// import 'package:flutter_firebase/login.dart';
+// import 'package:flutter_firebase/register.dart';
+import 'package:firebase_core/firebase_core.dart';
+// import 'package:news_app/register.dart';
+// import 'login.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  /// The future is part of the state of our widget. We should not call `initializeApp`
+  /// directly inside [build,].
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'News App',
-      theme: ThemeData(
-        primarySwatch: Colors.brown,
-      ),
-      home: Home(),
+    return FutureBuilder(
+      // Initialize FlutterFire:
+      future: _initialization,
+      builder: (context, snapshot) {
+        // Check for errors
+        if (snapshot.hasError) {
+          return const Text("Error occured in initialization");
+        }
+
+        // Once complete, show your application
+        if (snapshot.connectionState == ConnectionState.done) {
+          return MaterialApp(
+            title: 'NewsApp',
+            theme: ThemeData(
+              primarySwatch: Colors.purple,
+            ),
+            home: Home(),
+            routes: {
+              // "/": (context) => Login(),
+              // "/login": (context) => Login(),
+              // "/register": (context) => Register(),
+              "/home": (context) => Home()
+            },
+          );
+        }
+
+        // Otherwise, show something whilst waiting for initialization to complete
+        return const Text("Loading...");
+      },
     );
+    // return MaterialApp(
+    //   debugShowCheckedModeBanner: false,
+    //   title: 'News App',
+    //   theme: ThemeData(
+    //     primarySwatch: Colors.brown,
+    //   ),
+    //   home: Home(),
+    // );
   }
 }
 
