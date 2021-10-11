@@ -1,15 +1,31 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:news_app/home.dart';
 // import 'package:flutter_firebase/login.dart';
 // import 'package:flutter_firebase/register.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:news_app/register.dart';
+// import "package:http/http.dart " as http;
+
+import 'login.dart';
 // import 'package:news_app/register.dart';
 // import 'login.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  HttpOverrides.global = MyHttpOverrides();
   runApp(MyApp());
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -32,21 +48,25 @@ class MyApp extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.done) {
           return MaterialApp(
             title: 'NewsApp',
+            debugShowCheckedModeBanner: false,
             theme: ThemeData(
               primarySwatch: Colors.purple,
             ),
             home: Home(),
             routes: {
               // "/": (context) => Login(),
-              // "/login": (context) => Login(),
-              // "/register": (context) => Register(),
+              "/login": (context) => Login(),
+              "/register": (context) => Register(),
               "/home": (context) => Home()
             },
           );
         }
 
         // Otherwise, show something whilst waiting for initialization to complete
-        return const Text("Loading...");
+        return const Text(
+          "Loading...",
+          textDirection: TextDirection.ltr,
+        );
       },
     );
     // return MaterialApp(
