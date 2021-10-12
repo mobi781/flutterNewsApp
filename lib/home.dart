@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:http/http.dart';
 import 'package:news_app/categories.dart';
+import 'package:news_app/search.dart';
+import 'package:news_app/webview.dart';
 import 'dart:convert';
 
 import 'model.dart';
@@ -30,7 +32,7 @@ class _HomeState extends State<Home> {
   ];
 
   //functions
-
+  bool isFav = false;
   bool isLoading = true;
   getNewsofLatest() async {
     String url =
@@ -144,7 +146,11 @@ class _HomeState extends State<Home> {
                       if ((searchController.text).replaceAll(" ", "") == "") {
                         print("Blank search");
                       } else {
-                        // Navigator.push(context, MaterialPageRoute(builder: (context) => Search(searchController.text)));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SearchResult(
+                                    query: searchController.text)));
                       }
                     },
                     child: Container(
@@ -161,7 +167,11 @@ class _HomeState extends State<Home> {
                       //add search button on keyboard
                       textInputAction: TextInputAction.search,
                       onSubmitted: (value) {
-                        print(value);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    SearchResult(query: value)));
                       },
                       decoration: InputDecoration(
                           border: InputBorder.none, hintText: "Search..."),
@@ -241,49 +251,58 @@ class _HomeState extends State<Home> {
                         return Builder(
                           builder: (BuildContext context) {
                             return Container(
-                              child: Card(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Stack(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image.network(
-                                        item.newsImage,
-                                        fit: BoxFit.fitHeight,
-                                        width: double.infinity,
-                                      ),
-                                    ),
-                                    Positioned(
-                                      left: 0,
-                                      right: 0,
-                                      bottom: 0,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          gradient: LinearGradient(
-                                              colors: [
-                                                Colors.black12.withOpacity(0),
-                                                Colors.black
-                                              ],
-                                              begin: Alignment.topCenter,
-                                              end: Alignment.bottomCenter),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              WebNews(item.newsUrl)));
+                                },
+                                child: Card(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Stack(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Image.network(
+                                          item.newsImage,
+                                          fit: BoxFit.fitHeight,
+                                          width: double.infinity,
                                         ),
+                                      ),
+                                      Positioned(
+                                        left: 0,
+                                        right: 0,
+                                        bottom: 0,
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 5, vertical: 10),
-                                          child: Text(
-                                            item.headLine,
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            gradient: LinearGradient(
+                                                colors: [
+                                                  Colors.black12.withOpacity(0),
+                                                  Colors.black
+                                                ],
+                                                begin: Alignment.topCenter,
+                                                end: Alignment.bottomCenter),
+                                          ),
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 5, vertical: 10),
+                                            child: Text(
+                                              item.headLine,
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                               // width: MediaQuery.of(context).size.width,
@@ -325,7 +344,11 @@ class _HomeState extends State<Home> {
                           itemBuilder: (context, index) {
                             return InkWell(
                               onTap: () {
-                                print(context);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => WebNews(
+                                            newsModelList[index].newsUrl)));
                               },
                               child: Container(
                                 margin: EdgeInsets.symmetric(
@@ -376,17 +399,37 @@ class _HomeState extends State<Home> {
                                                     fontWeight:
                                                         FontWeight.bold),
                                               ),
-                                              Text(
-                                                newsModelList[index]
-                                                            .description
-                                                            .length >
-                                                        50
-                                                    ? "${newsModelList[index].description.substring(0, 40)}..."
-                                                    : newsModelList[index]
-                                                        .description,
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 12),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    newsModelList[index]
+                                                                .description
+                                                                .length >
+                                                            50
+                                                        ? "${newsModelList[index].description.substring(0, 40)}..."
+                                                        : newsModelList[index]
+                                                            .description,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 12),
+                                                  ),
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      print(newsModelList[index]
+                                                          .headLine);
+                                                      setState(() {
+                                                        isFav = true;
+                                                      });
+                                                    },
+                                                    child: !isFav
+                                                        ? Icon(Icons
+                                                            .favorite_border_outlined)
+                                                        : Icon(Icons.favorite),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),

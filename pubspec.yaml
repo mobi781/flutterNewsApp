@@ -40,6 +40,7 @@ dependencies:
   provider: ^5.0.0
   convert:
   http:
+  webview_flutter:
 
 dev_dependencies:
   flutter_test:
