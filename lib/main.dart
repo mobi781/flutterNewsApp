@@ -5,6 +5,7 @@ import 'package:news_app/home.dart';
 // import 'package:flutter_firebase/login.dart';
 // import 'package:flutter_firebase/register.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:news_app/localdb.dart';
 import 'package:news_app/register.dart';
 // import "package:http/http.dart " as http;
 
@@ -28,11 +29,32 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   /// The future is part of the state of our widget. We should not call `initializeApp`
   /// directly inside [build,].
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
-  // This widget is the root of your application.
+  bool isLogIn = false;
+
+  getLoggedInState() async {
+    await LocalDataSaver.getLogData().then((value) {
+      setState(() {
+        isLogIn = value!;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getLoggedInState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(

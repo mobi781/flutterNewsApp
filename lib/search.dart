@@ -59,7 +59,6 @@ class _SearchResultState extends State<SearchResult> {
           break;
         }
       }
-      ;
     });
   }
 

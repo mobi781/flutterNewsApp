@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:http/http.dart';
 import 'package:news_app/categories.dart';
+import 'package:news_app/drawer.dart';
+import 'package:news_app/login.dart';
 import 'package:news_app/search.dart';
 import 'package:news_app/webview.dart';
 import 'dart:convert';
@@ -34,6 +36,8 @@ class _HomeState extends State<Home> {
   //functions
   bool isFav = false;
   bool isLoading = true;
+
+  getProfile() async {}
   getNewsofLatest() async {
     String url =
         "https://newsapi.org/v2/top-headlines?country=us&apiKey=8b8afcebecb04f7eb80ba5657d79a5ea";
@@ -121,11 +125,11 @@ class _HomeState extends State<Home> {
             Text(
               "News",
               style:
-                  TextStyle(color: Colors.brown, fontWeight: FontWeight.w600),
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
             )
           ],
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.brown,
         elevation: 0.0,
         centerTitle: true,
       ),
@@ -197,16 +201,6 @@ class _HomeState extends State<Home> {
                               MaterialPageRoute(
                                   builder: (context) =>
                                       Category(query: categories[index])));
-                          // showDialog(
-                          //     context: context,
-                          //     builder: (context) {
-                          //       return AlertDialog(
-                          //         title: Text("Update"),
-                          //         content: Text("login please"),
-                          //         actions: [],
-                          //       );
-                          //     });
-                          // print(categories[index]);
                         },
                         child: Container(
                           padding:
@@ -418,8 +412,12 @@ class _HomeState extends State<Home> {
                                                   ),
                                                   GestureDetector(
                                                     onTap: () {
-                                                      print(newsModelList[index]
-                                                          .headLine);
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder:
+                                                                  (context) =>
+                                                                      Login()));
                                                       setState(() {
                                                         isFav = true;
                                                       });
@@ -447,6 +445,7 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
+      drawer: MyDrawer(),
     );
   }
 }
